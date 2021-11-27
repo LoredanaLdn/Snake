@@ -5,12 +5,10 @@ let score = 0;
 
 const ground = new Image();
 const foodImg = new Image();
-const island1Img = new Image();
-const island2Img = new Image();
+const islandImg = new Image();
 ground.src = "img/ground.png";
 foodImg.src = "img/food.png";
-island1Img.src = "img/island.png"
-island2Img.src = "img/island.png"
+islandImg.src = "img/island.png"
 
 let dead = new Audio();
 let eat = new Audio();
@@ -36,14 +34,11 @@ let food = {
     y : Math.floor(Math.random()*13+3) * box
 }
 
-let island1 = {
-    x : Math.floor(Math.random()*17+1) * box,
-    y : Math.floor(Math.random()*15+3) * box
-}
-
-let island2 = {
-    x : Math.floor(Math.random()*17+1) * box,
-    y : Math.floor(Math.random()*15+3) * box
+let island = {
+    x1 : Math.floor(Math.random()*17+1) * box,
+    y1 : Math.floor(Math.random()*15+3) * box,
+    x2 : Math.floor(Math.random()*17+1) * box,
+    y2 : Math.floor(Math.random()*15+3) * box
 }
 
 let d;
@@ -67,12 +62,12 @@ function direction(event) {
 }
  
 function collision(head, array) {
-    //for (let i = 0; i < array.length; i++) {
-        //if (head.x == array[i].x && head.y == array[i].y) {
-            //return true;
-        //}
-    //}
-    //return false;
+    for (let i = 0; i < array.length; i++) {
+        if (head.x == array[i].x && head.y == array[i].y) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function draw() {
@@ -84,9 +79,9 @@ function draw() {
         ctx.strokeRect(snake[i].x,snake[i].y,box,box);
     }
     ctx.drawImage(foodImg, food.x, food.y);
-    ctx.drawImage(island1Img, island1.x, island1.y);
-    ctx.drawImage(island2Img, island2.x, island2.y);
-
+    ctx.drawImage(islandImg, island.x1, island.y1);
+    ctx.drawImage(islandImg, island.x2, island.y2);
+    
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
 
@@ -102,14 +97,12 @@ function draw() {
             x : Math.floor(Math.random()*15+1) * box,
             y : Math.floor(Math.random()*13+3) * box
         }
-        if (score % 5 == 0) {
-            island1 = {
-                x : Math.floor(Math.random()*17+1) * box,
-                y : Math.floor(Math.random()*15+3) * box
-            }
-            island2 = {
-                x : Math.floor(Math.random()*17+1) * box,
-                y : Math.floor(Math.random()*15+3) * box
+        if (score % 5 == 0 && snakeX != island.x1 && snakeY != island.y1 && snakeX != island.x2 && snakeY != island.y2) {
+            island = {
+                x1 : Math.floor(Math.random()*17+1) * box,
+                y1 : Math.floor(Math.random()*15+3) * box,
+                x2 : Math.floor(Math.random()*17+1) * box,
+                y2 : Math.floor(Math.random()*15+3) * box
             }
         }
     } else {
@@ -121,15 +114,10 @@ function draw() {
         y : snakeY
     }
      
-    if (snakeX < box || snakeX > 17 * box || snakeY < 3*box || snakeY > 17*box || collision(newHead, snake)){
+    if (snakeX < box || snakeX > 17 * box || snakeY < 3*box || snakeY > 17*box || collision(newHead, snake) || (snakeX == island.x1 && snakeY == island.y1) || (snakeX == island.x2 && snakeY == island.y2)){
         clearInterval(game);
         dead.play();
-    }
-    if ((snakeX == island1.x && snakeY == island1.y) || (snakeX == island2.x && snakeY == island2.y)) {
-        clearInterval(game);
-        dead.play();
-    }
-    
+    }    
     snake.unshift(newHead);
     
     ctx.fillStyle = "white";
